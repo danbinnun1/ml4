@@ -49,7 +49,7 @@ train_data = CustomImageDataset('./train_x', './train_y')
 validation_data = ValidationImageDataset('./train_x', './train_y')
 train_dataloader = DataLoader(train_data, batch_size=64, shuffle=True)
 # validation_dataloader=DataLoader(validation_data,batch_size=64,shuffle=False)
-test_data = torchvision.datasets.MNIST('./data', train=False, transform=transforms.ToTensor(), download=True)
+test_data = torchvision.datasets.FashionMNIST('./data', train=False, transform=transforms.ToTensor(), download=True)
 test_dataloader=DataLoader(test_data,batch_size=64,shuffle=False)
 
 # train_features, train_labels = next(iter(train_dataloader))
@@ -84,15 +84,17 @@ criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
 
 for epoch in range(num_epochs):
+    model.train()
     for i, (images, lables) in enumerate(train_dataloader):
         images = images.to(device)
         labels = lables.to(device)
+        optimizer.zero_grad()
 
         output = model(images)
         loss = criterion(output, labels)
 
-        optimizer.zero_grad()
         loss.backward()
+
         optimizer.step()
 
     loss = criterion(model(train_dataloader.dataset.images),
